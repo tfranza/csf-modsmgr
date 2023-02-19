@@ -31,14 +31,14 @@ class GUI:
         gui_size : str = '320x105'
     ):
         """
-        Widget function that applies config mods onto original data.
+        Constructor method to initialize gui root reference, frames and widgets
         
         Args:
             gui_title (str) : text that will appear in the title bar
             gui_size  (str) : size of the window application
 
         Returns: 
-            str: Notification message regarding the result of the mods application
+            None
         
         """
         # initializing GUI frames
