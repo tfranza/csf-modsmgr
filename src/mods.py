@@ -5,6 +5,7 @@ from pathlib import Path
 
 from .backup import recover
 from .paths import PATH
+from .logs import LOG
 
 def set_cfg_orig() -> str:
     """
@@ -84,7 +85,7 @@ def run_game(
     if exe_path.exists():
         os.startfile(exe_path)
     else:
-        error_msg = 'Can\'t run the game. Exe not found in predefined path.'
+        error_msg = LOG.ERR_RUN_GAME.value
 
     return error_msg
 
@@ -115,6 +116,6 @@ def __set_config__(
             if error_msg:                   # if recover generates an error message, return it
                 break
     else:
-        error_msg = 'Can\'t find source folder.'
+        error_msg = LOG.ERR_CFG_NO_DIR.value
 
     return error_msg

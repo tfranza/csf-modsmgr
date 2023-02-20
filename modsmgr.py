@@ -7,6 +7,7 @@ from PIL import ImageTk, Image
 
 from src import mods
 from src.paths import PATH
+from src.logs import LOG
 
 class GUI:
     """GUI of the Mod Manager."""
@@ -96,7 +97,7 @@ class GUI:
         )
         self.l_logger = Label(
             self.f_footer,
-            text        = 'Know nothing of current cfg. Can change it though.',
+            text        = LOG.BASE_CFG.value,
             width       = 41 ,
             anchor      = 'w',
             borderwidth = 2,
@@ -133,17 +134,17 @@ class GUI:
         """
         # Restores original config files. If error is fired, logs it.
         if (error_msg := mods.set_cfg_orig()):
-            self.log('Can\'t reset original config. ' + error_msg)
+            self.log(LOG.ERR_CFG_ORIG.value + error_msg)
             return
 
         # Applies the widescreen-fix mod, if required. If error is fired, logs it.
         if ws_fix and (error_msg := mods.set_wsfix()):
-            self.log('Can\'t apply widescreen-fix. ' + error_msg)
+            self.log(LOG.ERR_CFG_WSFIX.value + error_msg)
             return
 
         # Applies the no-ext-view mod, if required. If error is fired, logs it.
         if no_ext_v and (error_msg := mods.set_no_ext_view()):
-            self.log('Can\'t apply no-ext-view. ' + error_msg)
+            self.log(LOG.ERR_CFG_NOEXTV.value + error_msg)
             return
 
         self.b_apply.config(state='disabled')
@@ -151,13 +152,13 @@ class GUI:
 
         # Logs a successful event corresponding to the required (and activated) mods.
         if ws_fix and no_ext_v:
-            self.log('Widescreen fix and No-external-view active!')
+            self.log(LOG.OK_CFG_WSFIX_NOEXTV.value)
         elif ws_fix:
-            self.log('Widescreen fix active!')
+            self.log(LOG.OK_CFG_WSFIX.value)
         elif no_ext_v:
-            self.log('No-external-view active!')
+            self.log(LOG.OK_CFG_NOEXTV.value)
         else:
-            self.log('Restored original config!')
+            self.log(LOG.OK_CFG_ORIG.value)
 
     def play_game(self,
         ws_fix: bool
@@ -189,7 +190,7 @@ class GUI:
         """
         self.b_apply.config(state='normal')
         self.b_run.config(state='disabled')
-        self.log('Pending changes...')
+        self.log(LOG.BASE_PENDING_CHANGE.value)
 
 
     def log(self,

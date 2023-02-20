@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 
 from .paths import PATH
+from .logs import LOG
 
 def backup(
     from_path: str,
@@ -44,7 +45,7 @@ def backup(
         else:
             __rename_path__(from_path, to_path)     # rename original into backup
     else:
-        error_msg = 'No original data found.'
+        error_msg = LOG.ERR_BAK_NOORIG.value
 
     return error_msg
 
@@ -86,7 +87,7 @@ def recover(
         else:
             __rename_path__(from_path, to_path)    # rename the backup into recovered
     else:
-        error_msg = 'No backup found.'
+        error_msg = LOG.ERR_BAK_NOBAK.value
 
     return error_msg
 
@@ -113,7 +114,7 @@ def __delete_path__(
             os.chmod(from_path, 0o777)
             os.unlink(from_path)
     else:
-        error_msg = 'Can\'t find path to be deleted.'
+        error_msg = LOG.ERR_BAK_DELETE.value
 
     return error_msg
 
@@ -139,7 +140,7 @@ def __copy_path__(
         else:
             shutil.copy2(from_path, to_path)
     else:
-        error_msg = 'Can\'t find path to be copied.'
+        error_msg = LOG.ERR_BAK_COPY
 
     return error_msg
 
@@ -164,6 +165,6 @@ def __rename_path__(
             __delete_path__(to_path)
         from_path.rename(to_path)
     else:
-        error_msg = 'Can\'t find path to be renamed.'
+        error_msg = LOG.ERR_BAK_RENAME
 
     return error_msg
