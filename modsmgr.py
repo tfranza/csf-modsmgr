@@ -8,9 +8,13 @@ from PIL import ImageTk, Image
 from src import mods
 from src.paths import PATH
 from src.logs import LOG
+from src.state import State
 
 class GUI:
     """GUI of the Mod Manager."""
+
+    # Current state
+    env: State
 
     # GUI root ref
     root : Tk
@@ -22,7 +26,7 @@ class GUI:
     # widgets
     l_csf_img  : Label
     b_wsfix    : Button
-    b_no_ext_v : Button
+    b_noextv : Button
     b_apply    : Button
     b_run      : Button
     l_logger   : Label
@@ -42,6 +46,9 @@ class GUI:
             None
         
         """
+        # initializing environment
+        self.env = State()
+
         # initializing GUI frames
         self.gui = Tk()
         self.gui.title(gui_title)
@@ -56,7 +63,7 @@ class GUI:
         self.f_footer.pack(padx=14)
 
         ws_fix_on      = IntVar()      # hold content of mods choices
-        no_ext_view_on = IntVar()
+        noextview_on = IntVar()
 
         # creating widgets
         img = ImageTk.PhotoImage(Image.open(PATH.RES_CSF.value))
@@ -73,12 +80,12 @@ class GUI:
             variable = ws_fix_on,
             command  = self.add_pending_mod
         )
-        self.b_no_ext_v = Checkbutton(
+        self.b_noextv = Checkbutton(
             self.f_config,
             text     = 'No External View',
             width    = 13,
             anchor   = 'w',
-            variable = no_ext_view_on,
+            variable = noextview_on,
             command  = self.add_pending_mod
         )
         self.b_apply = Button(
@@ -86,7 +93,7 @@ class GUI:
             text    = 'APPLY',
             width   = 10,
             justify = 'center',
-            command = lambda: self.apply_mods(ws_fix_on.get(), no_ext_view_on.get())
+            command = lambda: self.apply_mods(ws_fix_on.get(), noextview_on.get())
         )
         self.b_run = Button(
             self.f_config,
@@ -97,17 +104,18 @@ class GUI:
         )
         self.l_logger = Label(
             self.f_footer,
-            text        = LOG.BASE_CFG.value,
+            text        = LOG.INIT.value,
             width       = 41 ,
             anchor      = 'w',
             borderwidth = 2,
             relief      = 'groove'
         )
+        self.load_environment()
 
         # putting widgets in the interface
         self.l_csf_img .grid(row=0, column=0, rowspan=2)
         self.b_wsfix   .grid(row=0, column=1, padx=15)
-        self.b_no_ext_v.grid(row=1, column=1)
+        self.b_noextv  .grid(row=1, column=1)
         self.b_apply   .grid(row=0, column=2)
         self.b_run     .grid(row=1, column=2)
         self.l_logger.pack()
@@ -115,64 +123,107 @@ class GUI:
         # run the interface loop
         self.gui.mainloop()
 
+    def load_environment(self):
+        """
+        Load the state of the environment.
+        
+        Args:
+            None
+
+        Returns: 
+            None
+        
+        """
+        error_msg = self.env.load_state()
+        if error_msg:
+            self.log(error_msg)
+
+        if self.env.wsfix() > 0:
+            self.b_wsfix.select()
+
+        if self.env.noextv() > 0:
+            self.b_noextv.select()
+
 
     # creating button functions
     def apply_mods(self,
-        ws_fix  : bool,
-        no_ext_v: bool
+        wsfix : bool,
+        noextv: bool
     ):
         """
         Widget function that applies config mods onto original data.
         
         Args:
-            ws_fix   (bool) : widescreen fix mod is active
-            no_ext_v (bool) : no_ext_view    mod is active
+            wsfix  (bool) : widescreen fix mod is active
+            noextv (bool) : no external view mod is active
 
         Returns: 
             str: Notification message regarding the result of the mods application
         
         """
         # Restores original config files. If error is fired, logs it.
-        if (error_msg := mods.set_cfg_orig()):
+        error_msg = mods.set_cfg_orig()
+        if error_msg:
             self.log(LOG.ERR_CFG_ORIG.value + error_msg)
             return
+        else:
+            self.env.enable('cfg_orig')
+            self.env.disable('mod_wsfix')
+            self.env.disable('mod_noextv')
 
         # Applies the widescreen-fix mod, if required. If error is fired, logs it.
-        if ws_fix and (error_msg := mods.set_wsfix()):
-            self.log(LOG.ERR_CFG_WSFIX.value + error_msg)
-            return
+        if wsfix:
+            error_msg = mods.set_wsfix()
+            if error_msg:
+                self.log(LOG.ERR_CFG_WSFIX.value + error_msg)
+                return
+            else: 
+                self.env.disable('cfg_orig')
+                self.env.enable('mod_wsfix')
 
         # Applies the no-ext-view mod, if required. If error is fired, logs it.
-        if no_ext_v and (error_msg := mods.set_no_ext_view()):
-            self.log(LOG.ERR_CFG_NOEXTV.value + error_msg)
+        if noextv:
+            error_msg = mods.set_noextview()
+            if error_msg:
+                self.log(LOG.ERR_CFG_NOEXTV.value + error_msg)
+                return
+            else:
+                self.env.disable('cfg_orig')
+                self.env.enable('mod_noextv')
+
+        # Saves environment. If error is fired, logs it.
+        error_msg = self.env.save_state()
+        if error_msg:
+            self.log(error_msg)
             return
 
+        # updating buttons availability
         self.b_apply.config(state='disabled')
         self.b_run.config(state='normal')
 
         # Logs a successful event corresponding to the required (and activated) mods.
-        if ws_fix and no_ext_v:
+        if wsfix and noextv:
             self.log(LOG.OK_CFG_WSFIX_NOEXTV.value)
-        elif ws_fix:
+        elif wsfix:
             self.log(LOG.OK_CFG_WSFIX.value)
-        elif no_ext_v:
+        elif noextv:
             self.log(LOG.OK_CFG_NOEXTV.value)
         else:
             self.log(LOG.OK_CFG_ORIG.value)
 
     def play_game(self,
-        ws_fix: bool
+        wsfix: bool
     ):
         """
         Run the game.
         
         Args:
-            ws_fix (bool) : widescreen fix mod is active
+            wsfix (bool) : widescreen fix mod is active
 
         Returns:
             None
         """
-        error_msg = mods.run_game(ws_fix)
+        error_msg = mods.run_game(wsfix)
         if error_msg:
             self.log(error_msg)
         else:
@@ -190,7 +241,7 @@ class GUI:
         """
         self.b_apply.config(state='normal')
         self.b_run.config(state='disabled')
-        self.log(LOG.BASE_PENDING_CHANGE.value)
+        self.log(LOG.PENDING_CHANGES.value)
 
 
     def log(self,

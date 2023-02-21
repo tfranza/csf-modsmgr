@@ -20,3 +20,4 @@ class PATH(Enum):
 
     RES_ICO   = Path('modsmgr/resources/modsmgr.ico')
     RES_CSF   = Path('modsmgr/resources/csf.png')
+    RES_STATE = Path('modsmgr/resources/env.dat') 

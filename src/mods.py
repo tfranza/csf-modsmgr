@@ -46,7 +46,7 @@ def set_wsfix() -> str:
     """
     return __set_config__(PATH.CFG_WSFIX.value)
 
-def set_no_ext_view() -> str:
+def set_noextview() -> str:
     """
     Apply no-external-view mod.
 
@@ -60,20 +60,20 @@ def set_no_ext_view() -> str:
     return __set_config__(PATH.CFG_EXTV.value)
 
 def run_game(
-    ws_fix: bool = True
+    wsfix: bool = True
 ) -> str:
     """
     Run the executable game file that corresponds to the widescreen fix, if active.
     
     Args:
-        ws_fix (bool) : True if the widescreen fix mod is active
+        wsfix (bool) : True if the widescreen fix mod is active
 
     Returns: 
         str: Failure message
 
     """
     exe_path = None
-    if ws_fix:
+    if wsfix:
         print('> Running widescreen executable.')
         exe_path = PATH.HOME.value / PATH.EXE_16_9.value
     else:

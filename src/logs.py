@@ -5,8 +5,8 @@ from enum import Enum
 class LOG(Enum):
     """Enum class containing association between descriptive variables and textual messages."""
 
-    BASE_CFG = 'Know nothing of current cfg. Can change it though.'
-    BASE_PENDING_CHANGE = 'Pending changes...'
+    INIT = 'Loaded last environment.'
+    PENDING_CHANGES = 'Pending changes...'
 
     # Error messages
     ERR_BAK_NOBAK  = 'No backup found.'
@@ -21,6 +21,10 @@ class LOG(Enum):
     ERR_CFG_NO_DIR = 'Can\'t find source folder.'
 
     ERR_RUN_GAME   = 'Can\'t run the game. Exe not found in predefined path.'
+
+    ERR_STATE_SAVE = 'Can\'t save the state.'
+    ERR_STATE_LOAD = 'No saved environments. Using default.'
+    ERR_STATE_KEY  = 'Can\'t change state. State key not found.'
 
     # Success messages
     OK_CFG_ORIG         = 'Restored original config!'
