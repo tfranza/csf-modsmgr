@@ -8,13 +8,13 @@ from PIL import ImageTk, Image
 from src import mods
 from src.paths import PATH
 from src.logs import LOG
-from src.state import State
+from src.env import Environment
 
 class GUI:
     """GUI of the Mod Manager."""
 
     # Current state
-    env: State
+    env: Environment
 
     # GUI root ref
     root : Tk
@@ -47,7 +47,7 @@ class GUI:
         
         """
         # initializing environment
-        self.env = State()
+        self.env = Environment()
 
         # initializing GUI frames
         self.gui = Tk()
@@ -166,10 +166,9 @@ class GUI:
         if error_msg:
             self.log(LOG.ERR_CFG_ORIG.value + error_msg)
             return
-        else:
-            self.env.enable('cfg_orig')
-            self.env.disable('mod_wsfix')
-            self.env.disable('mod_noextv')
+        self.env.enable('cfg_orig')
+        self.env.disable('mod_wsfix')
+        self.env.disable('mod_noextv')
 
         # Applies the widescreen-fix mod, if required. If error is fired, logs it.
         if wsfix:
@@ -177,9 +176,8 @@ class GUI:
             if error_msg:
                 self.log(LOG.ERR_CFG_WSFIX.value + error_msg)
                 return
-            else: 
-                self.env.disable('cfg_orig')
-                self.env.enable('mod_wsfix')
+            self.env.disable('cfg_orig')
+            self.env.enable('mod_wsfix')
 
         # Applies the no-ext-view mod, if required. If error is fired, logs it.
         if noextv:
@@ -187,9 +185,8 @@ class GUI:
             if error_msg:
                 self.log(LOG.ERR_CFG_NOEXTV.value + error_msg)
                 return
-            else:
-                self.env.disable('cfg_orig')
-                self.env.enable('mod_noextv')
+            self.env.disable('cfg_orig')
+            self.env.enable('mod_noextv')
 
         # Saves environment. If error is fired, logs it.
         error_msg = self.env.save_state()

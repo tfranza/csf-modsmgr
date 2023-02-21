@@ -6,7 +6,7 @@ from enum import Enum
 
 class PATH(Enum):
     """Enum class containing association between path variables and textual ones."""
-    
+
     HOME = Path(os.getcwd())
     CFG  = Path('config')
 
@@ -20,4 +20,4 @@ class PATH(Enum):
 
     RES_ICO   = Path('modsmgr/resources/modsmgr.ico')
     RES_CSF   = Path('modsmgr/resources/csf.png')
-    RES_STATE = Path('modsmgr/resources/env.dat') 
+    RES_STATE = Path('modsmgr/resources/env.dat')

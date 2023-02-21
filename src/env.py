@@ -1,15 +1,15 @@
 """Module storing the current state of the applied mods."""
 
-import os
 import pickle as pk
 
 from .logs import LOG
 from .paths import PATH
 
 class Environment:
+    """Environment used from the Mod Manager to update GUI elements."""
 
 	# state reference
-    state: dict 
+    state: dict
 
     def __init__(self):
         """
@@ -28,8 +28,6 @@ class Environment:
             'mod_wsfix'     : 0,
             'mod_noextv'    : 0
         }
-
-        return
 
     # change state functions
     def __update_state__(self,
@@ -134,9 +132,9 @@ class Environment:
         try:
             with open(path, 'rb') as handle:
                 self.state = pk.load(handle)
-        except: 
+        except:
             error_msg = LOG.ERR_STATE_LOAD.value
-        print(self.state.items())
+
         return error_msg
 
     # getters
@@ -156,7 +154,7 @@ class Environment:
         return self.state[state_key]
 
     # getters
-    def cfg_orig(self) -> int: 
+    def cfg_orig(self) -> int:
         """
         Gets the value for original config files presence.
 
@@ -169,7 +167,7 @@ class Environment:
         """
         return self.__get_state__('cfg_orig')
 
-    def wsfix(self) -> int: 
+    def wsfix(self) -> int:
         """
         Gets the value for widescreen fix mod active.
 
@@ -182,7 +180,7 @@ class Environment:
         """
         return self.__get_state__('mod_wsfix')
 
-    def noextv(self) -> int: 
+    def noextv(self) -> int:
         """
         Gets the value for no-external-view mod active.
 
