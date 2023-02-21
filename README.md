@@ -27,7 +27,6 @@ Comes in handy to avoid compatibility issues between different game versions, wh
 
 ## Currently Known Issues
 - The notification system will show "pending changes" even if a mod option is first selected and then deselected (which would result in no real change).
-- The application has no knowledge of the currently installed mods (stateless), even though able to change the current state of the data. 
 
 ## Planned Mods
 - **More Weapons**: Weapons selection from the full pool, for each character. Customization of rewards for promotion ranks. 
