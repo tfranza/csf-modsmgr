@@ -43,22 +43,22 @@ class Environment:
             enabled (int)   : next state to be assigned to the state key
 
         Returns:
-            str: Failure message
+            None
+
+        Raises:
+            KeyError: missing key for specific state
 
         """
         print('> Updating environment...')
 
-        error_msg = None
         if state_key in self.state.keys():
             self.state[state_key] = enabled
         else:
-            error_msg = LOG.ERR_STATE_KEY
-
-        return error_msg
+            raise KeyError(LOG.ERR_STATE_KEY.value)
 
     def enable(self,
         state_key: str
-    ) -> str:
+    ):
         """
         Update state by assigning 1 to the corresponding state key.
 
@@ -66,14 +66,14 @@ class Environment:
             state_key (str) : state key to be enabled
 
         Returns:
-            str: Failure message
+            None
 
         """
-        return self.__update_state__(state_key, 1)
+        self.__update_state__(state_key, 1)
 
     def disable(self,
         state_key: str
-    ) -> str:
+    ):
         """
         Update state by assigning 0 to the corresponding state key.
 
@@ -81,15 +81,15 @@ class Environment:
             state_key (str) : state key to be disabled
 
         Returns:
-            str: Failure message
+            None
 
         """
-        return self.__update_state__(state_key, 0)
+        self.__update_state__(state_key, 0)
 
     ## serialization functions
     def save_state(self,
         path: str = PATH.RES_STATE.value
-    ) -> str:
+    ):
         """
         Saves the current state of active mods and relevant variables
         in the specified path.
@@ -98,23 +98,23 @@ class Environment:
             path (str) : relative path where to store the state
 
         Returns:
-            str: failure message
+            None
+
+        Raises:
+            KeyError: missing key for specific state
 
         """
         print('> Saving environment...')
 
-        error_msg = None
         try:
             with open(path, 'wb') as handle:
                 pk.dump(self.state, handle, protocol=pk.HIGHEST_PROTOCOL)
-        except:
-            error_msg = LOG.ERR_STATE_SAVE.value
-
-        return error_msg
+        except FileNotFoundError as err:
+            raise FileNotFoundError(LOG.ERR_STATE_SAVE.value) from err
 
     def load_state(self,
         path: str = PATH.RES_STATE.value
-    ) -> str:
+    ):
         """
         Loads the current state of active mods and relevant variables 
         from the file stored in specified path.
@@ -123,19 +123,19 @@ class Environment:
             path (str) : relative path where the state is stored
 
         Returns:
-            str: failure message
+            None
+
+        Raises:
+            FileNotFoundError: missing environment file
 
         """
         print('> Loading environment...')
 
-        error_msg = None
         try:
             with open(path, 'rb') as handle:
                 self.state = pk.load(handle)
-        except:
-            error_msg = LOG.ERR_STATE_LOAD.value
-
-        return error_msg
+        except FileNotFoundError as err:
+            raise FileNotFoundError(LOG.ERR_STATE_LOAD.value) from err
 
     # getters
     def __get_state__(self,
@@ -148,7 +148,7 @@ class Environment:
             state_key (str) : state key for which the status is retrieved
 
         Returns:
-            str: Failure message
+            int: the state value
 
         """
         return self.state[state_key]

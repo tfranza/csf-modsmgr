@@ -62,7 +62,7 @@ class GUI:
         self.f_footer = Frame(self.gui)
         self.f_footer.pack(padx=14)
 
-        ws_fix_on      = IntVar()      # hold content of mods choices
+        ws_fix_on    = IntVar()      # hold content of mods choices
         noextview_on = IntVar()
 
         # creating widgets
@@ -134,9 +134,10 @@ class GUI:
             None
         
         """
-        error_msg = self.env.load_state()
-        if error_msg:
-            self.log(error_msg)
+        try:
+            self.env.load_state()
+        except FileNotFoundError as err:
+            self.log(str(err))
 
         if self.env.wsfix() > 0:
             self.b_wsfix.select()
@@ -162,9 +163,10 @@ class GUI:
         
         """
         # Restores original config files. If error is fired, logs it.
-        error_msg = mods.set_cfg_orig()
-        if error_msg:
-            self.log(LOG.ERR_CFG_ORIG.value + error_msg)
+        try:
+            mods.set_cfg_orig()
+        except FileNotFoundError as err:
+            self.log(LOG.ERR_CFG_ORIG.value + str(err))
             return
         self.env.enable('cfg_orig')
         self.env.disable('mod_wsfix')
@@ -172,26 +174,30 @@ class GUI:
 
         # Applies the widescreen-fix mod, if required. If error is fired, logs it.
         if wsfix:
-            error_msg = mods.set_wsfix()
-            if error_msg:
-                self.log(LOG.ERR_CFG_WSFIX.value + error_msg)
+            try:
+                mods.set_wsfix()
+            except FileNotFoundError as err:
+                self.log(LOG.ERR_CFG_WSFIX.value + str(err))
                 return
             self.env.disable('cfg_orig')
             self.env.enable('mod_wsfix')
 
         # Applies the no-ext-view mod, if required. If error is fired, logs it.
         if noextv:
-            error_msg = mods.set_noextview()
-            if error_msg:
-                self.log(LOG.ERR_CFG_NOEXTV.value + error_msg)
+            try:
+                mods.set_noextview()
+            except FileNotFoundError as err:
+                self.log(LOG.ERR_CFG_NOEXTV.value + str(err))
                 return
             self.env.disable('cfg_orig')
             self.env.enable('mod_noextv')
 
         # Saves environment. If error is fired, logs it.
-        error_msg = self.env.save_state()
-        if error_msg:
-            self.log(error_msg)
+        try:
+            self.env.save_state()
+        except FileNotFoundError as err:
+            self.log(str(err))
+            print(str(err))
             return
 
         # updating buttons availability
@@ -220,9 +226,10 @@ class GUI:
         Returns:
             None
         """
-        error_msg = mods.run_game(wsfix)
-        if error_msg:
-            self.log(error_msg)
+        try:
+            mods.run_game(wsfix)
+        except FileNotFoundError as err:
+            self.log(str(err))
         else:
             self.gui.destroy()
 

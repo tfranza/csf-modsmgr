@@ -7,7 +7,7 @@ from .backup import recover
 from .paths import PATH
 from .logs import LOG
 
-def set_cfg_orig() -> str:
+def set_cfg_orig():
     """
     Reset config files to originals.
     
@@ -15,12 +15,12 @@ def set_cfg_orig() -> str:
         None
 
     Returns: 
-        str: Failure message
+        None
 
     """
-    return __set_config__(PATH.CFG_ORIG.value)
+    __set_config__(PATH.CFG_ORIG.value)
 
-def set_cfg_demo() -> str:
+def set_cfg_demo():
     """
     Reset config files to demo (decyphered).
     
@@ -28,12 +28,12 @@ def set_cfg_demo() -> str:
         None
 
     Returns: 
-        str: Failure message
+        None
 
     """
-    return __set_config__(PATH.CFG_DEMO.value)
+    __set_config__(PATH.CFG_DEMO.value)
 
-def set_wsfix() -> str:
+def set_wsfix():
     """
     Apply widescreen fix mod.
 
@@ -41,12 +41,12 @@ def set_wsfix() -> str:
         None
     
     Returns: 
-        str: Failure message
+        None
 
     """
-    return __set_config__(PATH.CFG_WSFIX.value)
+    __set_config__(PATH.CFG_WSFIX.value)
 
-def set_noextview() -> str:
+def set_noextview():
     """
     Apply no-external-view mod.
 
@@ -54,40 +54,36 @@ def set_noextview() -> str:
         None
     
     Returns: 
-        str: Failure message
+        None
 
     """
-    return __set_config__(PATH.CFG_EXTV.value)
+    __set_config__(PATH.CFG_EXTV.value)
 
 def run_game(
-    wsfix: bool = True
-) -> str:
+    ws_fix: bool = True
+):
     """
     Run the executable game file that corresponds to the widescreen fix, if active.
     
     Args:
-        wsfix (bool) : True if the widescreen fix mod is active
+        ws_fix (bool) : True if the widescreen fix mod is active
 
-    Returns: 
-        str: Failure message
+    Raises:
+        FileNotFoundError: missing exe file to run the game
 
     """
     exe_path = None
-    if wsfix:
+    if ws_fix:
         print('> Running widescreen executable.')
         exe_path = PATH.HOME.value / PATH.EXE_16_9.value
     else:
         print('> Running original executable.')
         exe_path = PATH.HOME.value / PATH.EXE_4_3.value
 
-    error_msg = None
-    print(exe_path)
-    if exe_path.exists():
+    if Path.exists(exe_path):
         os.startfile(exe_path)
     else:
-        error_msg = LOG.ERR_RUN_GAME.value
-
-    return error_msg
+        raise FileNotFoundError(LOG.ERR_RUN_GAME.value)
 
 
 ####################          Utility functions          ####################
@@ -95,7 +91,7 @@ def run_game(
 def __set_config__(
     src_folder: str,
     dest_folder: str = PATH.CFG.value
-) -> str:
+):
     """
     Update files in the config folder.
     
@@ -104,18 +100,16 @@ def __set_config__(
         dest_folder (str) : path of the config folder
 
     Returns: 
-        str: Failure message
-    
+        None
+
+    Raises:
+        FileNotFoundError: missing folder or config files to be set 
+
     """
-    error_msg = None
     if src_folder.is_dir():
         for filename in os.listdir(src_folder):
             from_path = Path(src_folder) / filename
             to_path   = Path(dest_folder) / filename
-            error_msg = recover(from_path=from_path, to_path=to_path)
-            if error_msg:                   # if recover generates an error message, return it
-                break
+            recover(from_path=from_path, to_path=to_path)
     else:
-        error_msg = LOG.ERR_CFG_NO_DIR.value
-
-    return error_msg
+        raise FileNotFoundError(LOG.ERR_CFG_NO_DIR.value)
