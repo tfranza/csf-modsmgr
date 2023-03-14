@@ -1,4 +1,4 @@
-# CSF Mods Manager v0.3
+# CSF Mods Manager v0.2
 
 Companion application for the game "Commandos: Strike Force" under the Windows OS, while allowing:
 - mods selection through a graphical interface
