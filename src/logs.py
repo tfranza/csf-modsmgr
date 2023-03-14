@@ -19,6 +19,7 @@ class LOG(Enum):
     ERR_CFG_WSFIX  = 'Can\'t apply widescreen-fix. '
     ERR_CFG_NOEXTV = 'Can\'t apply no-ext-view. '
     ERR_CFG_NO_DIR = 'Can\'t find source folder.'
+    ERR_CHANGE_CFG_FILE = 'Can\'t find cfg file.'
 
     ERR_RUN_GAME   = 'Can\'t run the game. Exe not found in predefined path.'
 

@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+import re
 
 from .backup import recover
 from .paths import PATH
@@ -17,21 +18,33 @@ def set_cfg_orig():
     Returns: 
         None
 
-    """
-    __set_config__(PATH.CFG_ORIG.value)
-
-def set_cfg_demo():
-    """
-    Reset config files to demo (decyphered).
-    
-    Args:
-        None
-
-    Returns: 
-        None
+    Raises:
+        FileNotFoundError: missing config files to be recovered
 
     """
-    __set_config__(PATH.CFG_DEMO.value)
+    # recover config files
+    recover(from_path = PATH.DEMO.value / PATH.CFG_CONTROL.value,
+            to_path   =                   PATH.CFG_CONTROL.value)
+    recover(from_path = PATH.DEMO.value / PATH.CFG_EDITOR.value,
+            to_path   =                   PATH.CFG_EDITOR.value)
+    recover(from_path = PATH.DEMO.value / PATH.CFG_JUEGO.value,
+            to_path   =                   PATH.CFG_JUEGO.value)
+    recover(from_path = PATH.DEMO.value / PATH.CFG_JUEGOPLA.value,
+            to_path   =                   PATH.CFG_JUEGOPLA.value)
+    recover(from_path = PATH.DEMO.value / PATH.CFG_JUEGOPLA.value,
+            to_path   =                   PATH.CFG_JUEGOPLA.value)
+    recover(from_path = PATH.DEMO.value / PATH.CFG_MULTIP.value,
+            to_path   =                   PATH.CFG_MULTIP.value)
+    recover(from_path = PATH.DEMO.value / PATH.CFG_PUNTERIA.value,
+            to_path   =                   PATH.CFG_PUNTERIA.value)
+    recover(from_path = PATH.DEMO.value / PATH.CFG_RED.value,
+            to_path   =                   PATH.CFG_RED.value)
+    recover(from_path = PATH.DEMO.value / PATH.CFG_SONIDOS.value,
+            to_path   =                   PATH.CFG_SONIDOS.value)
+
+    # recover exe
+    recover(from_path = PATH.ORIG.value / PATH.EXE.value,
+            to_path   =                   PATH.EXE.value)
 
 def set_wsfix():
     """
@@ -44,7 +57,11 @@ def set_wsfix():
         None
 
     """
-    __set_config__(PATH.CFG_WSFIX.value)
+    recover(from_path = PATH.WSFIX.value / PATH.EXE.value,
+            to_path   =                    PATH.EXE.value)
+
+    change_config_options(cfg_path = PATH.CFG_JUEGOPLA.value,
+                          options  = {'fFOV': '90.000000'})
 
 def set_noextview():
     """
@@ -57,59 +74,64 @@ def set_noextview():
         None
 
     """
-    __set_config__(PATH.CFG_EXTV.value)
+    change_config_options(cfg_path = PATH.CFG_JUEGO.value,
+                          options  = {'CameraExternaDistancia'    : '0.000000',
+                                      'CameraExternaAnguloInicial': '0.000000',
+                                      'CameraExternaAnguloMinimo' : '0.000000',
+                                      'CameraExternaAnguloMaximo' : '0.000000',
+                                      'CameraExternaIncFOV'       : '0.000000' })
 
-def run_game(
-    ws_fix: bool = True
-):
+def run_game():
     """
     Run the executable game file that corresponds to the widescreen fix, if active.
     
     Args:
-        ws_fix (bool) : True if the widescreen fix mod is active
-
-    Raises:
-        FileNotFoundError: missing exe file to run the game
-
-    """
-    exe_path = None
-    if ws_fix:
-        print('> Running widescreen executable.')
-        exe_path = PATH.HOME.value / PATH.EXE_16_9.value
-    else:
-        print('> Running original executable.')
-        exe_path = PATH.HOME.value / PATH.EXE_4_3.value
-
-    if Path.exists(exe_path):
-        os.startfile(exe_path)
-    else:
-        raise FileNotFoundError(LOG.ERR_RUN_GAME.value)
-
-
-####################          Utility functions          ####################
-
-def __set_config__(
-    src_folder: str,
-    dest_folder: str = PATH.CFG.value
-):
-    """
-    Update files in the config folder.
-    
-    Args:
-        src_folder  (str) : path of the source folder
-        dest_folder (str) : path of the config folder
+        None
 
     Returns: 
         None
 
     Raises:
-        FileNotFoundError: missing folder or config files to be set 
+        FileNotFoundError: missing exe file to run the game
 
     """
-    if src_folder.is_dir():
-        for filename in os.listdir(src_folder):
-            from_path = Path(src_folder) / filename
-            to_path   = Path(dest_folder) / filename
-            recover(from_path=from_path, to_path=to_path)
+    exe_path = PATH.HOME.value / PATH.EXE.value
+    if Path.exists(exe_path):
+        os.startfile(exe_path)
     else:
-        raise FileNotFoundError(LOG.ERR_CFG_NO_DIR.value)
+        raise FileNotFoundError(LOG.ERR_RUN_GAME.value)
+
+def change_config_options(
+    cfg_path: str,
+    options : dict
+):
+    """
+    Change configuration values for the files contained in the config folder.
+    
+    Args:
+        cfg_path (str) : path of the config file
+        options (dict) : dictionary containing option names and corresponding updated values.
+
+    Returns: 
+        None
+
+    Raises:
+        FileNotFoundError: missing config files to be updated
+
+    """
+    cfg_absolute_path = PATH.HOME.value / cfg_path
+
+    if Path.exists(cfg_absolute_path):
+        with open(cfg_absolute_path, 'r', encoding='utf-8') as handle:
+            contents = handle.read()
+
+        updated_contents = contents
+        for option, value in options.items():
+            pattern = fr'(\.{option}\s+)(\-?\d+(?:\.\d+)?|\(\s+\d+(?:\.\d+)?\s+\d+(?:\.\d+)?\s+\))'
+            replacement = fr'\1 {value}'
+            updated_contents = re.sub(pattern, replacement, updated_contents)
+
+        with open(cfg_absolute_path, 'w', encoding='utf-8') as handle:
+            handle.write(updated_contents)
+    else:
+        raise FileNotFoundError(LOG.ERR_CHANGE_CFG_FILE.value)

@@ -8,15 +8,23 @@ class PATH(Enum):
     """Enum class containing association between path variables and textual ones."""
 
     HOME = Path(os.getcwd())
-    CFG  = Path('config')
 
-    EXE_4_3   = Path('CommXPC.exe')
-    EXE_16_9  = Path('CommXPC_16x9.exe')
+    EXE = Path('CommXPC.exe')
 
-    CFG_ORIG  = Path('modsmgr/mods/original_config')
-    CFG_DEMO  = Path('modsmgr/mods/demo_config')
-    CFG_WSFIX = Path('modsmgr/mods/widescreen_fix')
-    CFG_EXTV  = Path('modsmgr/mods/no_external_view')
+    CFG = Path('config')
+    CFG_CONTROL  = Path('config/Control.cfg')
+    CFG_EDITOR   = Path('config/Editor.cfg')
+    CFG_JUEGO    = Path('config/Juego.cfg')
+    CFG_JUEGOPLA = Path('config/JuegoPla.cfg') 
+    CFG_JUEGOVER = Path('config/JuegoVer.cfg')
+    CFG_MULTIP   = Path('config/MultiP.cfg')
+    CFG_PUNTERIA = Path('config/Punteria.cfg')
+    CFG_RED      = Path('config/Red.cfg')
+    CFG_SONIDOS  = Path('config/Sonidos.cfg')
+
+    ORIG = Path('modsmgr/orig/')
+    DEMO = Path('modsmgr/demo/')
+    WSFIX = Path('modsmgr/wsfix/')
 
     RES_ICO   = Path('modsmgr/resources/modsmgr.ico')
     RES_CSF   = Path('modsmgr/resources/csf.png')

@@ -100,7 +100,7 @@ class GUI:
             text    = 'RUN',
             width   = 10,
             justify = 'center',
-            command = lambda: self.play_game(ws_fix_on.get())
+            command = lambda: self.play_game()
         )
         self.l_logger = Label(
             self.f_footer,
@@ -214,24 +214,21 @@ class GUI:
         else:
             self.log(LOG.OK_CFG_ORIG.value)
 
-    def play_game(self,
-        wsfix: bool
-    ):
+    def play_game(self):
         """
         Run the game.
         
         Args:
-            wsfix (bool) : widescreen fix mod is active
+            None
 
         Returns:
             None
         """
         try:
-            mods.run_game(wsfix)
+            mods.run_game()
+            self.gui.destroy()
         except FileNotFoundError as err:
             self.log(str(err))
-        else:
-            self.gui.destroy()
 
     def add_pending_mod(self):
         """
