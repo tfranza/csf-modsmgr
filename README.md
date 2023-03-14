@@ -1,4 +1,4 @@
-# CSF Mods Manager v0.1
+# CSF Mods Manager v0.3
 
 Companion application for the game "Commandos: Strike Force" under the Windows OS, while allowing:
 - mods selection through a graphical interface
@@ -23,6 +23,13 @@ Comes in handy to avoid compatibility issues between different game versions, wh
 2. Copy in the home game folder: 
     - the "*modsmgr*" folder
     - the executable file "modsmgr.exe" generated in the "*dist*" folder
+3. Download original and widescreen compatible exe from [here](https://drive.google.com/file/d/1WSi2pITeD1rc3H0CwXnUzgexlDOfiGpL), then replace the content of the modsmgr folder.
+4. Run "*modsmgr.exe*" in game folder.
+
+or 
+
+1. Download the full application from [here](https://drive.google.com/drive/folders/1T1N7tOrVrSsIQns3WHQEc7kbW33zTywo).
+2. Extract it into the game folder.
 3. Run "*modsmgr.exe*" in game folder.
 
 ## Currently Known Issues
